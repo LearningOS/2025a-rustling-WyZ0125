@@ -9,6 +9,7 @@
 
 fn main() {
     let word = String::from("green"); // Try not changing this line :)
+    let word = &word[0..5];
     if is_a_color_word(word) {
         println!("That is a color word I know!");
     } else {
