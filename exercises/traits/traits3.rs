@@ -8,10 +8,15 @@
 // Execute `rustlings hint traits3` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
 
 pub trait Licensed {
-    fn licensing_info(&self) -> String;
+    fn licensing_info(&self) -> String{
+        String::from("Some information")//add add add
+    }
+    //Traits can have a default implementation for functions. Structs that implement
+    //the trait can then use the default version of these functions if they choose not
+    //implement the function themselves.
+
 }
 
 struct SomeSoftware {
