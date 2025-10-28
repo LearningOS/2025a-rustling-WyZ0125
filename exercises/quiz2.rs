@@ -20,7 +20,6 @@
 //
 // No hints this time!
 
-// I AM NOT DONE
 
 pub enum Command {
     Uppercase,
@@ -32,11 +31,17 @@ mod my_module {
     use super::Command;
 
     // TODO: Complete the function signature!
-    pub fn transformer(input: ???) -> ??? {
+    pub fn transformer(input: &Vec<(String,Command)>) -> Vec<String> {
         // TODO: Complete the output declaration!
-        let mut output: ??? = vec![];
+        let mut output: Vec<String> = vec![];
         for (string, command) in input.iter() {
             // TODO: Complete the function body. You can do it!
+            let processed_string = match command{//单个字符串
+                Command::Uppercase => string.to_uppercase(),
+                Command::Trim => string.trim().to_string(),
+                Command::Append(n)=>format!("{}{}",string,"bar".repeat(*n)),
+            };
+            output.push(processed_string);
         }
         output
     }
@@ -45,12 +50,13 @@ mod my_module {
 #[cfg(test)]
 mod tests {
     // TODO: What do we need to import to have `transformer` in scope?
-    use ???;
+    use super::my_module::transformer;//super 是一个路径关键字，用于表示 “当前模块的父模块”（即包含当前模块的那个模块）。在你的代码里，use super::my_module::transformer 中的 super 作用是
+    //从当前模块（tests 模块）向上找到它的父模块，再访问父模块中的 my_module。
     use super::Command;
 
     #[test]
     fn it_works() {
-        let output = transformer(vec![
+        let output = transformer(&vec![
             ("hello".into(), Command::Uppercase),
             (" all roads lead to rome! ".into(), Command::Trim),
             ("foo".into(), Command::Append(1)),

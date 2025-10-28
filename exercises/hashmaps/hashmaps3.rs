@@ -8,13 +8,12 @@
 // team scored, and goals the team conceded. One approach to build the scores
 // table is to use a Hashmap. The solution is partially written to use a
 // Hashmap, complete it to pass the test.
-//
+// 构建一个比分表，包含球队名称、该球队的进球数（goals_scored）和失球数（goals_conceded）
 // Make me pass the tests!
 //
 // Execute `rustlings hint hashmaps3` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
 
 use std::collections::HashMap;
 
@@ -26,6 +25,7 @@ struct Team {
 
 fn build_scores_table(results: String) -> HashMap<String, Team> {
     // The name of the team is the key and its associated struct is the value.
+    //// 哈希表的键是球队名称，值是对应的 Team 结构体
     let mut scores: HashMap<String, Team> = HashMap::new();
 
     for r in results.lines() {
@@ -39,6 +39,25 @@ fn build_scores_table(results: String) -> HashMap<String, Team> {
         // will be the number of goals conceded from team_2, and similarly
         // goals scored by team_2 will be the number of goals conceded by
         // team_1.
+
+/*利用 HashMap::entry 方法，对每场比赛的两队分别处理：
+对球队 1：进球数加 team_1_score，失球数加 team_2_score；
+对球队 2：进球数加 team_2_score，失球数加 team_1_score；
+用 or_insert 初始化首次出现的球队数据（初始进球 / 失球均为 0），再通过可变引用修改数值。 */
+        let team1 = scores.entry(team_1_name).or_insert(Team {
+            goals_scored: 0,
+            goals_conceded: 0,
+        });
+        team1.goals_scored += team_1_score;
+        team1.goals_conceded += team_2_score;
+
+
+        let team2 = scores.entry(team_2_name).or_insert(Team {
+            goals_scored: 0,
+            goals_conceded: 0,
+        });
+        team2.goals_scored += team_2_score;
+        team2.goals_conceded += team_1_score;
     }
     scores
 }
