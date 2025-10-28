@@ -6,14 +6,14 @@
 // Execute `rustlings hint generics2` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
 
-struct Wrapper {
-    value: u32,
+struct Wrapper<T> {//<T> 表示这是一个 泛型结构体。
+    value: T,
 }
 
-impl Wrapper {
-    pub fn new(value: u32) -> Self {
+impl<T> Wrapper<T> {//diyige 声明!!!你告诉编译器：在这个 impl 代码块内部，你会用到一个叫 T 的泛型类型。
+    //Wrapper<T> 表示 “针对所有 Wrapper<T> 类型（带有类型参数 T）实现方法”。
+    pub fn new(value: T) -> Self {
         Wrapper { value }
     }
 }

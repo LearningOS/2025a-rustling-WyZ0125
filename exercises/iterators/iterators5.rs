@@ -11,7 +11,6 @@
 // Execute `rustlings hint iterators5` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
 
 use std::collections::HashMap;
 
@@ -22,6 +21,9 @@ enum Progress {
     Complete,
 }
 
+//已有两个基于命令式循环的计数函数（count_for 和 count_collection_for），分别用于：
+//统计单个哈希表（HashMap）中，某个特定进度状态（如 Complete）的条目数量。
+//统计一个哈希表集合（&[HashMap]）中，所有哈希表中某个特定进度状态的总数量。
 fn count_for(map: &HashMap<String, Progress>, value: Progress) -> usize {
     let mut count = 0;
     for val in map.values() {
@@ -35,7 +37,10 @@ fn count_for(map: &HashMap<String, Progress>, value: Progress) -> usize {
 fn count_iterator(map: &HashMap<String, Progress>, value: Progress) -> usize {
     // map is a hashmap with String keys and Progress values.
     // map = { "variables1": Complete, "from_str": None, ... }
-    todo!();
+    map.values().filter(|&&v| v==value).count()
+    //从哈希表中获取所有值的迭代器（map.values()）；
+    //筛选出与目标 value 相等的值（filter(...)）；
+    //统计筛选后的元素数量（count()）。
 }
 
 fn count_collection_for(collection: &[HashMap<String, Progress>], value: Progress) -> usize {
@@ -54,7 +59,14 @@ fn count_collection_iterator(collection: &[HashMap<String, Progress>], value: Pr
     // collection is a slice of hashmaps.
     // collection = [{ "variables1": Complete, "from_str": None, ... },
     //     { "variables2": Complete, ... }, ... ]
-    todo!();
+    collection
+        .iter()                  // 步骤1：迭代集合中的每个哈希表
+        .flat_map(|map| {         // 步骤2：将每个哈希表的筛选结果"展平"
+            map.values()          // 对单个哈希表，先获取所有值的迭代器
+                .filter(move |&&v| v == value)  // 筛选出与目标值相等的元素 move 确保闭包捕获 value 的所有权（而非借用），
+                //因为闭包需要在 flat_map 迭代过程中持续使用 value，而 value 的生命周期需要覆盖整个迭代过程。
+        })
+        .count()                  // 步骤3：统计所有符合条件的元素总数
 }
 
 #[cfg(test)]
