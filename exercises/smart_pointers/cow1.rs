@@ -30,7 +30,17 @@ fn abs_all<'a, 'b>(input: &'a mut Cow<'b, [i32]>) -> &'a mut Cow<'b, [i32]> {
 #[cfg(test)]
 mod tests {
     use super::*;
+//若通过 Cow::from(&slice[..]) 创建（slice 是数组切片），初始为 Cow::Borrowed(_)（借用状态，无所有权）；
+//若通过 Cow::from(vec) 创建（vec 是 Vec<i32>），初始为 Cow::Owned(_)（拥有状态，有所有权）。
 
+//当调用 input.to_mut() 时，若当前是 Borrowed 状态，会克隆数据转为 Owned；若已是 Owned，则直接返回可变引用（无克隆）；
+//本练习中，仅当输入包含负数（需要修改）时才会调用 to_mut()，否则不触发任何克隆。
+
+//以下测试遍历了所有情况
+/*借用状态 + 需修改 → 转为拥有状态（克隆）；
+借用状态 + 无需修改 → 保持借用状态（无克隆）；
+拥有状态 + 无需修改 → 保持拥有状态（无克隆）；
+拥有状态 + 需修改 → 保持拥有状态（无克隆）。 */
     #[test]
     fn reference_mutation() -> Result<(), &'static str> {
         // Clone occurs because `input` needs to be mutated.
@@ -49,6 +59,8 @@ mod tests {
         let mut input = Cow::from(&slice[..]);
         match abs_all(&mut input) {
             // TODO
+            Cow::Borrowed(_) => Ok(()),
+            _ => Err("Expected borrowed value"),
         }
     }
 
@@ -61,6 +73,8 @@ mod tests {
         let mut input = Cow::from(slice);
         match abs_all(&mut input) {
             // TODO
+            Cow::Owned(_) => Ok(()),
+            _ => Err("Expected owned value"),
         }
     }
 
@@ -73,6 +87,8 @@ mod tests {
         let mut input = Cow::from(slice);
         match abs_all(&mut input) {
             // TODO
+            Cow::Owned(_) => Ok(()),
+            _ => Err("Expected owned value"),
         }
     }
 }
