@@ -3,14 +3,17 @@
 // Execute `rustlings hint macros2` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
+//顶层宏默认遵循词法顺序，必须 “先定义，后使用”（局部宏更是严格遵循此规则）；
 
-fn main() {
-    my_macro!();
-}
+
 
 macro_rules! my_macro {
     () => {
         println!("Check out my macro!");
     };
+}
+
+
+fn main() {
+    my_macro!();
 }
