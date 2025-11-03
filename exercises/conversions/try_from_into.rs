@@ -8,7 +8,7 @@
 //
 // Execute `rustlings hint try_from_into` or use the `hint` watch subcommand for
 // a hint.
-
+//本质上，它与 From 类似，主要区别在于 TryFrom 应返回 Result 类型，而非目标类型本身。
 use std::convert::{TryFrom, TryInto};
 
 #[derive(Debug, PartialEq)]
@@ -27,7 +27,7 @@ enum IntoColorError {
     IntConversion,
 }
 
-// I AM NOT DONE
+
 
 // Your task is to complete this implementation and return an Ok result of inner
 // type Color. You need to create an implementation for a tuple of three
@@ -37,10 +37,26 @@ enum IntoColorError {
 // time, but the slice implementation needs to check the slice length! Also note
 // that correct RGB color values must be integers in the 0..=255 range.
 
+// 工具函数：检查 i16 是否在 0-255 范围，合法则转 u8，否则返回 IntConversion 错误
+// u8：无符号 8 位整数   0 ~ 255    i16：有符号 16 位整数-32768 ~ 32767
+fn validate_and_convert(val: i16) -> Result<u8, IntoColorError> {
+    if val >= 0 && val <= 255 {
+        Ok(val as u8)
+    } else {
+        Err(IntoColorError::IntConversion)
+    }
+}
+
+
 // Tuple implementation
 impl TryFrom<(i16, i16, i16)> for Color {
     type Error = IntoColorError;
     fn try_from(tuple: (i16, i16, i16)) -> Result<Self, Self::Error> {
+        // 分别验证并转换三个通道的值，用 ? 传递错误
+        let red = validate_and_convert(tuple.0)?;
+        let green = validate_and_convert(tuple.1)?;
+        let blue = validate_and_convert(tuple.2)?;
+        Ok(Color { red, green, blue })
     }
 }
 
@@ -48,6 +64,15 @@ impl TryFrom<(i16, i16, i16)> for Color {
 impl TryFrom<[i16; 3]> for Color {
     type Error = IntoColorError;
     fn try_from(arr: [i16; 3]) -> Result<Self, Self::Error> {
+        // 数组转三元组后，直接调用三元组的 try_into（自动实现）
+        /* 只要你实现了 “A 能从 B 转来”（A: TryFrom<B>），就自动实现 “B 能转成 A”（B: TryInto<A>）
+        color from tuple     tuple into color
+        之前为 Color 实现了 TryFrom<(i16, i16, i16)>，这段代码的核心作用是：
+        定义了 “怎么把 (i16, i16, i16) 三元组转成 Color”
+         */
+        //一句话总结：通过数组转三元组，再调用三元组的 try_into()，
+        //实现了 “一次编写，多次复用”，这是 Rust 中减少重复代码的常用技巧。
+        (arr[0], arr[1], arr[2]).try_into()
     }
 }
 
@@ -55,6 +80,12 @@ impl TryFrom<[i16; 3]> for Color {
 impl TryFrom<&[i16]> for Color {
     type Error = IntoColorError;
     fn try_from(slice: &[i16]) -> Result<Self, Self::Error> {
+        // 第一步：检查切片长度是否为 3，否则返回 BadLen 错误
+        if slice.len() != 3 {
+            return Err(IntoColorError::BadLen);
+        }
+        // 第二步：切片转数组后，复用数组的 try_into（长度已确认，安全）
+        [slice[0], slice[1], slice[2]].try_into()
     }
 }
 

@@ -7,25 +7,30 @@
 // Execute `rustlings hint as_ref_mut` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
+//本题需要正确使用 AsRef 和 AsMut 特质，实现引用转换和可变操作。
+//AsRef<T>：用于廉价的 “引用到引用” 转换（如 String → &str，Box<u32> → &u32），通过 as_ref() 方法实现。
+//AsMut<T>：与 AsRef 类似，但用于可变引用转换（如 &mut Box<u32> → &mut u32），通过 as_mut() 方法实现。
 
 // Obtain the number of bytes (not characters) in the given argument.
 // TODO: Add the AsRef trait appropriately as a trait bound.
-fn byte_counter<T>(arg: T) -> usize {
+fn byte_counter<T:AsRef<str>>(arg: T) -> usize {
+    //需要参数能通过 as_ref() 转换为 &str（因为 &str 有 as_bytes() 方法）。
     arg.as_ref().as_bytes().len()
 }
 
 // Obtain the number of characters (not bytes) in the given argument.
 // TODO: Add the AsRef trait appropriately as a trait bound.
-fn char_counter<T>(arg: T) -> usize {
+fn char_counter<T:AsRef<str>>(arg: T) -> usize {
+    //需要参数能通过 as_ref() 转换为 &str（因为 &str 有 chars() 方法）。
     arg.as_ref().chars().count()
 }
 
 // Squares a number using as_mut().
 // TODO: Add the appropriate trait bound.
-fn num_sq<T>(arg: &mut T) {
+fn num_sq<T:AsMut<u32>>(arg: &mut T) {
     // TODO: Implement the function body.
-    ???
+    let num = arg.as_mut();
+    *num *= *num;
 }
 
 #[cfg(test)]
