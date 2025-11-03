@@ -27,20 +27,33 @@
 //
 // You should NOT modify any existing code except for adding two lines of attributes.
 
-// I AM NOT DONE
 
 extern "Rust" {
     fn my_demo_function(a: u32) -> u32;
+    #[link_name = "my_demo_function"]
     fn my_demo_function_alias(a: u32) -> u32;
 }
 
 mod Foo {
     // No `extern` equals `extern "Rust"`.
+    // 给实际函数添加 no_mangle 属性，禁用名字修饰，暴露原始符号
+    #[no_mangle]
     fn my_demo_function(a: u32) -> u32 {
         a
     }
 }
 
+
+/*
+二、问题分析
+核心需求是让 extern "Rust" 块中声明的两个函数（my_demo_function 和 my_demo_function_alias）
+能正确链接到 Foo 模块内的 my_demo_function，需解决两个关键问题(学习两个属性用法)：
+
+符号可见性：Foo::my_demo_function 是模块内的普通函数，
+默认会被 Rust 进行 “名字修饰”，且仅在模块内可见，外部 extern 块无法定位到它 —— 需用 #[no_mangle] 禁用名字修饰，让函数以原始名称作为符号暴露。
+别名映射：my_demo_function_alias 是 my_demo_function 的别名，
+需用 #[link_name = "my_demo_function"] 告诉链接器：“my_demo_function_alias 实际对应的符号是 my_demo_function”，从而让两个声明指向同一个函数实现。
+ */
 #[cfg(test)]
 mod tests {
     use super::*;

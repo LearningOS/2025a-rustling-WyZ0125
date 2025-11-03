@@ -22,7 +22,9 @@
 // Execute `rustlings hint tests5` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
+
+
+
 
 /// # Safety
 ///
@@ -32,7 +34,12 @@ unsafe fn modify_by_address(address: usize) {
     // code's behavior and the contract of this function. You may use the
     // comment of the test below as your format reference.
     unsafe {
-        todo!("Your code goes here")
+        let ptr = address as *mut u32;
+        //步骤 1：地址类型转换传入的 address 是 usize 类型（内存地址的数值表示），
+        //需先转换为 *mut u32（指向可变 u32 的原始指针），才能操作对应的内存数据：
+        //（as 用于不同指针 / 数值类型的强制转换，仅在 unsafe 中安全）。
+        *ptr = 0xAABBCCDD;
+
     }
 }
 
