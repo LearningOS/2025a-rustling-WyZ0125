@@ -2,8 +2,9 @@
 	graph
 	This problem requires you to implement a basic graph functio
 */
-// I AM NOT DONE
+//本题需要实现无向带权图（UndirectedGraph） 的核心功能，基于邻接表（HashMap<String, Vec<(String, i32)>>）存储结构，补全两个关键方法
 
+//这个没有细看，后面按需学习
 use std::collections::{HashMap, HashSet};
 use std::fmt;
 #[derive(Debug, Clone)]
@@ -28,17 +29,41 @@ impl Graph for UndirectedGraph {
     fn adjacency_table(&self) -> &HashMap<String, Vec<(String, i32)>> {
         &self.adjacency_table
     }
+     // 补全：无向图的add_edge实现（双向添加边）
     fn add_edge(&mut self, edge: (&str, &str, i32)) {
-        //TODO
+        let (from, to, weight) = edge;
+        // 1. 先添加两个节点（若不存在）：调用add_node，已存在则自动忽略
+        self.add_node(from);
+        self.add_node(to);
+
+        // 2. 无向边：from的邻接表添加(to, weight)
+        let from_neighbours = self.adjacency_table_mutable().get_mut(from).unwrap();
+        from_neighbours.push((to.to_string(), weight));
+
+        // 3. 无向边：to的邻接表添加(from, weight)
+        let to_neighbours = self.adjacency_table_mutable().get_mut(to).unwrap();
+        to_neighbours.push((from.to_string(), weight));
     }
 }
 pub trait Graph {
     fn new() -> Self;
     fn adjacency_table_mutable(&mut self) -> &mut HashMap<String, Vec<(String, i32)>>;
     fn adjacency_table(&self) -> &HashMap<String, Vec<(String, i32)>>;
+    // 补全：添加节点（不存在则添加，返回true；已存在则返回false）
     fn add_node(&mut self, node: &str) -> bool {
-        //TODO
-		true
+        let node_str = node.to_string();
+        // HashMap的entry方法：判断节点是否存在
+        match self.adjacency_table_mutable().entry(node_str) {
+            std::collections::hash_map::Entry::Vacant(vacant) => {
+                // 节点不存在：插入空的邻接列表（无邻接节点）
+                vacant.insert(Vec::new());
+                true // 添加成功
+            }
+            std::collections::hash_map::Entry::Occupied(_) => {
+                // 节点已存在：无需操作，返回false
+                false // 添加失败
+            }
+        }
     }
     fn add_edge(&mut self, edge: (&str, &str, i32)) {
         //TODO

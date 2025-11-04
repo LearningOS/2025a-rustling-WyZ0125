@@ -3,11 +3,28 @@
 	This problem requires you to implement a sorting algorithm
 	you can use bubble sorting, insertion sorting, heap sorting, etc.
 */
-// I AM NOT DONE
 
-fn sort<T>(array: &mut [T]){
-	//TODO
+fn sort<T>(array: &mut [T])
+where
+    T: Ord, // 注意该格式:约束T必须实现Ord trait，支持比较操作（<、>等）
+{
+    let len = array.len();
+    // 外层循环：控制已排序部分的长度（0..len-1，最后一个元素自动有序）
+    for i in 0..len - 1 {
+        // 假设当前索引i是未排序部分的最小值索引
+        let mut min_index = i;
+        // 内层循环：从i+1开始，找到未排序部分的最小值索引 不进行交换；
+        for j in i + 1..len {
+            if array[j] < array[min_index] {
+                min_index = j; // 更新最小值索引
+            }
+        }
+        // 将找到的最小值与当前i位置的元素交换（放到已排序部分末尾）
+        //交换操作 array.swap(i, min_index) 仅在每轮内层循环结束后执行 1 次，将最小值放到指定位置。
+        array.swap(i, min_index);
+    }
 }
+
 #[cfg(test)]
 mod tests {
     use super::*;
